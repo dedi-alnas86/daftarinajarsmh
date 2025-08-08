@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detail Data Pasien</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .modal-container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 480px;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .modal-header {
+            padding: 24px 24px 20px;
+            border-bottom: 1px solid #e5e5e5;
+            position: relative;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin: 0;
+        }
+
+        .close-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 32px;
+            height: 32px;
+            border: 2px solid #333;
+            background: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .close-button:hover {
+            background-color: #f5f5f5;
+            transform: scale(1.05);
+        }
+
+        .modal-content {
+            padding: 24px;
+        }
+
+        .info-section {
+            margin-bottom: 32px;
+        }
+
+        .info-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .info-value {
+            font-size: 16px;
+            color: #e74c3c;
+            font-weight: 500;
+            word-break: break-all;
+        }
+
+        .info-divider {
+            height: 1px;
+            background-color: #e5e5e5;
+            margin: 24px 0;
+        }
+
+        .qr-section {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .qr-code {
+            width: 160px;
+            height: 160px;
+            background: white;
+            border: 2px solid #ddd;
+            margin: 16px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 8px;
+        }
+
+        .qr-code canvas {
+            max-width: 100%;
+            max-height: 100%;
+            border-radius: 4px;
+        }
+
+        .status-valid {
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            color: white;
+            padding: 16px 24px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 16px rgba(255, 107, 107, 0.3);
+            animation: blinkSlow 2s ease-in-out infinite;
+        }
+
+        @keyframes blinkSlow {
+            0%, 50%, 100% {
+                opacity: 1;
+            }
+            25%, 75% {
+                opacity: 0.3;
+            }
+        }
+
+        .close-footer {
+            padding: 20px 24px;
+            text-align: right;
+            border-top: 1px solid #e5e5e5;
+            background-color: #fafafa;
+            border-radius: 0 0 16px 16px;
+        }
+
+        .close-footer-button {
+            background: #666;
+            color: white;
+            padding: 12px 32px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .close-footer-button:hover {
+            background: #555;
+            transform: translateY(-1px);
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+                align-items: flex-start;
+                padding-top: 20px;
+            }
+            
+            .modal-container {
+                max-width: 100%;
+                border-radius: 12px;
+                max-height: 95vh;
+            }
+
+            .modal-header {
+                padding: 20px 20px 16px;
+            }
+
+            .modal-title {
+                font-size: 18px;
+                padding-right: 40px;
+            }
+
+            .close-button {
+                width: 28px;
+                height: 28px;
+                top: 16px;
+                right: 16px;
+                font-size: 16px;
+            }
+
+            .modal-content {
+                padding: 20px;
+            }
+
+            .info-section {
+                margin-bottom: 24px;
+            }
+
+            .info-label {
+                font-size: 13px;
+                margin-bottom: 6px;
+            }
+
+            .info-value {
+                font-size: 15px;
+            }
+
+            .qr-code {
+                width: 140px;
+                height: 140px;
+            }
+
+            .qr-placeholder {
+                width: 120px;
+                height: 120px;
+            }
+
+            .status-valid {
+                padding: 14px 20px;
+                font-size: 16px;
+            }
+
+            .close-footer {
+                padding: 16px 20px;
+                text-align: right;
+            }
+        }
+
+        /* Extra small mobile */
+        @media (max-width: 360px) {
+            .modal-container {
+                border-radius: 8px;
+            }
+
+            .modal-header {
+                padding: 16px;
+            }
+
+            .modal-content {
+                padding: 16px;
+            }
+
+            .info-section {
+                margin-bottom: 20px;
+            }
+
+            .qr-code {
+                width: 120px;
+                height: 120px;
+            }
+
+            .qr-placeholder {
+                width: 100px;
+                height: 100px;
+            }
+        }
+
+        /* Smooth scrolling for overflow content */
+        .modal-container {
+            scrollbar-width: thin;
+            scrollbar-color: #ccc transparent;
+        }
+
+        .modal-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .modal-container::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .modal-container::-webkit-scrollbar-thumb {
+            background-color: #ccc;
+            border-radius: 3px;
+        }
+
+        .modal-container::-webkit-scrollbar-thumb:hover {
+            background-color: #999;
+        }
+    </style>
+</head>
+<body>
+    <div class="modal-container">
+        <!-- Header -->
+        <div class="modal-header">
+            <h2 class="modal-title">Detail Data Pasien</h2>
+            <button class="close-button" onclick="closeModal()">×</button>
+        </div>
+
+        <!-- Content -->
+        <div class="modal-content">
+            <div class="info-section">
+                <label class="info-label">TANGGAL KUNJUNGAN</label>
+                <div class="info-value">11-08-2025</div>
+            </div>
+
+            <div class="info-divider"></div>
+
+            <div class="info-section">
+                <label class="info-label">POLI TUJUAN</label>
+                <div class="info-value">REHABILITASI MEDIK - REHABILITASI MEDIK</div>
+            </div>
+
+            <div class="info-divider"></div>
+
+            <div class="info-section">
+                <label class="info-label">SUB LAYANAN</label>
+                <div class="info-value">-</div>
+            </div>
+
+            <div class="info-divider"></div>
+
+            <div class="info-section">
+                <label class="info-label">NOMOR RUJUKAN</label>
+                <div class="info-value">0601R0120625B000214</div>
+            </div>
+
+            <div class="info-divider"></div>
+
+            <div class="info-section">
+                <label class="info-label">NOMOR RESERVASI</label>
+                <div class="info-value">20250811-041FPS</div>
+            </div>
+
+            <div class="info-divider"></div>
+
+            <div class="info-section">
+                <label class="info-label">ESTIMASI LAYANAN</label>
+                <div class="info-value">08:00 - 09:00 WIB</div>
+            </div>
+
+            <div class="info-divider"></div>
+
+            <div class="qr-section">
+                <label class="info-label">QR CODE</label>
+                <div class="qr-code" id="qrcode">
+                    <!-- QR code will be generated here -->
+                </div>
+            </div>
+
+            <div class="status-valid">
+                Data Anda VALID
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="close-footer">
+            <button class="close-footer-button" onclick="closeModal()">Tutup</button>
+        </div>
+    </div>
+
+    <script>
+        // Generate QR Code
+        function generateQRCode() {
+            const qrText = "20250811-041FPS";
+            const qr = qrcode(0, 'M');
+            qr.addData(qrText);
+            qr.make();
+            
+            // Create canvas element
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            const moduleCount = qr.getModuleCount();
+            const cellSize = 4;
+            const margin = 8;
+            
+            canvas.width = canvas.height = (moduleCount * cellSize) + (margin * 2);
+            
+            // Fill background
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw QR modules
+            ctx.fillStyle = '#000000';
+            for (let row = 0; row < moduleCount; row++) {
+                for (let col = 0; col < moduleCount; col++) {
+                    if (qr.isDark(row, col)) {
+                        ctx.fillRect(
+                            col * cellSize + margin,
+                            row * cellSize + margin,
+                            cellSize,
+                            cellSize
+                        );
+                    }
+                }
+            }
+            
+            // Insert canvas into QR code container
+            const qrContainer = document.getElementById('qrcode');
+            qrContainer.innerHTML = '';
+            qrContainer.appendChild(canvas);
+        }
+
+        // Generate QR code when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            generateQRCode();
+        });
+
+        function closeModal() {
+            // Add closing animation
+            const modal = document.querySelector('.modal-container');
+            modal.style.animation = 'slideOut 0.2s ease-in forwards';
+            
+            setTimeout(() => {
+                // In a real application, this would close the modal
+                alert('Modal akan ditutup');
+                modal.style.animation = 'slideIn 0.3s ease-out';
+            }, 200);
+        }
+
+        // Add slideOut animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideOut {
+                from {
+                    opacity: 1;
+                    transform: translateY(0) scale(1);
+                }
+                to {
+                    opacity: 0;
+                    transform: translateY(-20px) scale(0.95);
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Handle escape key to close modal
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeModal();
+            }
+        });
+
+        // Handle click outside modal (on overlay)
+        document.addEventListener('click', function(event) {
+            if (event.target === document.body) {
+                closeModal();
+            }
+        });
+
+        // Prevent modal content click from closing modal
+        document.querySelector('.modal-container').addEventListener('click', function(event) {
+            event.stopPropagation();
+        });
+    </script>
+</body>
+</html>
